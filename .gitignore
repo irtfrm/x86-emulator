@@ -1,3 +1,5 @@
 *.o
 *.bin
 px86
+
+.vscode

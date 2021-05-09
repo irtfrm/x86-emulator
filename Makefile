@@ -1,5 +1,5 @@
 TARGET = px86
-OBJS = main.o
+OBJS = main.o emulator_function.o instruction.o
 
 CC = /usr/bin/gcc
 CFLAGS += -Wall
@@ -8,7 +8,7 @@ CFLAGS += -Wall
 all :
 	make $(TARGET)
 
-%.o : %.c Makefile
+%.o : src/%.c Makefile
 	$(CC) $(CFLAGS) -c $<
 
 $(TARGET) : $(OBJS) Makefile
