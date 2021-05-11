@@ -26,22 +26,25 @@ uint32_t get_sign_code32(Emulator* emu, int index)
     return (int32_t) get_code32(emu, index);
 }
 
-void mov_r32_imm32(Emulator* emu)
+uint32_t get_register32(Emulator* emu, uint8_t rm)
 {
-    uint8_t reg = get_code8(emu, 0) - 0xB8;
-    uint32_t value = get_code32(emu, 1);
-    emu->registers[reg] = value;
-    emu->eip += 5;
+    return emu->registers[rm];
 }
 
-void short_jump(Emulator* emu)
+void set_register32(Emulator* emu, uint8_t rm, uint32_t value)
 {
-    int8_t diff = get_sign_code8(emu, 1);
-    emu->eip += (diff + 2);
+    emu->registers[rm] = value;
 }
 
-void near_jump(Emulator* emu)
+void set_memory8(Emulator* emu, uint32_t address, uint32_t value)
 {
-    int32_t diff = get_sign_code32(emu, 1);
-    emu->eip += (diff+5);
+    emu->memory[address] = value & 0xFF;
+}
+
+void set_memory32(Emulator* emu, uint32_t address, uint32_t value)
+{
+    int i;
+    for (i = 0; i < 4; i++) {
+        set_memory32(emu, address + i, value >> (i * 8));
+    }
 }
