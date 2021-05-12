@@ -1,5 +1,5 @@
 TARGET = px86
-OBJS = main.o emulator_function.o instruction.o
+OBJS = main.o emulator_function.o instruction.o modrm.o
 
 CC = /usr/bin/gcc
 CFLAGS += -Wall
