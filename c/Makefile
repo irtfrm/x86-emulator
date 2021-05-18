@@ -1,11 +1,12 @@
-TARGET = call-test.bin
+TARGET = test.bin
+OBJS = crt0.o test.o
 
 CC = gcc
 LD = ld
 AS = nasm
 CFLAGS += -nostdlib -fno-asynchronous-unwind-tables \
 	-I../include -g -fno-stack-protector
-LDFLAGS += --entry=func --oformat=binary
+LDFLAGS += --oformat binary
 
 .PHONY: all
 all :
@@ -14,8 +15,8 @@ all :
 %.o : %.c Makefile
 	$(CC) $(CFLAGS) -c $<
 
-%.bin : %.o Makefile
-	$(LD) $(LDFLAGS) -o $@ $<
+# %.o : %.asm Makefile
+# 	$(AS) -f elf $<
 
-%.bin : %.asm Makefile
-	$(AS) -f bin -o $@ $<
+$(TARGET) : $(OBJS) Makefile
+	$(LD) $(LDFLAGS) -o $@ $(OBJS)
