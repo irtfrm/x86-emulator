@@ -3,3 +3,4 @@
 px86
 
 .vscode
+*.DS_Store
