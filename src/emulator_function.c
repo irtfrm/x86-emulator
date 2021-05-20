@@ -1,5 +1,15 @@
 #include "emulator.h"
 #include "emulator_function.h"
+#include <stdio.h>
+
+uint8_t get_register8(Emulator* emu, int index)
+{
+    if (index < 4) {
+        return emu->registers[index] & 0xff;
+    } else {
+        return (emu->registers[index-4] >> 8) & 0xff;
+    }
+}
 
 uint32_t get_code8(Emulator* emu, int index)
 {
@@ -29,6 +39,17 @@ uint32_t get_sign_code32(Emulator* emu, int index)
 uint32_t get_register32(Emulator* emu, uint8_t rm)
 {
     return emu->registers[rm];
+}
+
+void set_register8(Emulator* emu, int index, uint8_t value)
+{
+    if (index < 4) {
+        uint32_t r = emu->registers[index] & 0xffffff00;
+        emu->registers[index] = r | (uint32_t)value;
+    } else {
+        uint32_t r = emu->registers[index] & 0xffff00ff;
+        emu->registers[index-4] = r | ((uint32_t)value << 8);
+    }
 }
 
 void set_register32(Emulator* emu, uint8_t rm, uint32_t value)
@@ -145,4 +166,27 @@ void update_eflags_sub(Emulator* emu, uint32_t v1, uint32_t v2, uint64_t result)
     set_zero(emu, result == 0);
     set_sign(emu, signr);
     set_overflow(emu, sign1 != sign2 && sign1 != signr);
+}
+
+uint8_t io_in8(uint16_t address)
+{
+    switch (address) {
+        case 0x03f8:
+            return getchar();
+        default:
+            return 0;
+    }
+}
+
+void io_out8(uint16_t address, uint8_t value)
+{
+    switch (address)
+    {
+    case 0x03f8:
+        putchar(value);
+        break;
+    
+    default:
+        break;
+    }
 }
