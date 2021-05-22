@@ -1,4 +1,4 @@
-TARGET = call-test.bin
+TARGET = in-out-test.bin
 
 CC = gcc
 LD = ld
