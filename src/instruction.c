@@ -87,6 +87,24 @@ static void add_rm32_imm8(Emulator* emu, ModRM* modrm)
     set_rm32(emu, modrm, rm32 + imm8);
 }
 
+static void cmp_al_imm8(Emulator* emu)
+{
+    uint8_t value = get_code8(emu, 1);
+    uint8_t al = get_register8(emu, AL);
+    uint64_t result = (uint64_t)al - (uint64_t)value;
+    update_eflags_sub(emu, al, value, result);
+    emu->eip += 2;
+}
+
+static void cmp_eax_imm32(Emulator* emu)
+{
+    uint32_t value = get_code32(emu, 1);
+    uint32_t eax = get_register32(emu, EAX);
+    uint64_t result = (uint64_t)eax - (uint64_t)value;
+    update_eflags_sub(emu, eax, value, result);
+    emu->eip += 5;
+}
+
 static void cmp_r32_rm32(Emulator* emu)
 {
     emu->eip += 1;
@@ -137,6 +155,20 @@ static void code_83(Emulator* emu)
             printf("not implemented: 83 /%d\n", modrm.opecode);
             exit(1);
     }
+}
+
+static void inc_r32(Emulator* emu)
+{
+    uint32_t reg = get_code8(emu, 0) - 0x40;
+    set_register32(emu, reg, get_register32(emu, reg) + 1);
+    emu->eip += 1;
+}
+
+static void dec_r32(Emulator* emu)
+{
+    uint32_t reg = get_code8(emu, 0) - 0x48;
+    set_register32(emu, reg, get_register32(emu, reg) - 1);
+    emu->eip += 1;
 }
 
 static void inc_rm32(Emulator* emu, ModRM* modrm)
@@ -290,6 +322,16 @@ void init_instructions(void) {
     instructions[0x01] = add_rm32_r32;
 
     instructions[0x3B] = cmp_r32_rm32;
+    instructions[0x3C] = cmp_al_imm8;
+    instructions[0x3D] = cmp_eax_imm32;
+
+    for (i = 0; i < 8; i++) {
+        instructions[ 0x40 + i ] = inc_r32;
+    }
+
+    for (i = 0; i < 8; i++) {
+        instructions[ 0x48 + i ] = dec_r32;
+    }
 
     for (i = 0; i < 8; i++) {
         instructions[ 0x50 + i ] = push_r32;
