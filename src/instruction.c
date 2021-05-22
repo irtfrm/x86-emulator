@@ -8,6 +8,12 @@
 #include "emulator_function.h"
 #include "modrm.h"
 
+static void mov_r8_imm8(Emulator* emu)
+{
+    uint8_t reg = get_code8(emu, 0) - 0xB0;
+    set_register8(emu, reg, get_code8(emu, 1));
+    emu->eip += 2;
+}
 
 static void mov_r32_imm32(Emulator* emu)
 {
@@ -27,6 +33,15 @@ static void mov_rm32_imm32(Emulator* emu)
     set_rm32(emu, &modrm, value);
 }
 
+static void mov_rm8_r8(Emulator* emu)
+{
+    emu->eip += 1;
+    ModRM modrm;
+    parse_modrm(emu, & modrm);
+    uint8_t r8 = get_r8(emu, &modrm);
+    set_r8(emu, &modrm, r8);
+}
+
 static void mov_rm32_r32(Emulator* emu)
 {
     emu->eip += 1;
@@ -34,6 +49,15 @@ static void mov_rm32_r32(Emulator* emu)
     parse_modrm(emu, &modrm);
     uint32_t r32 = get_r32(emu, &modrm);
     set_rm32(emu, &modrm, r32);
+}
+
+static void mov_r8_rm8(Emulator* emu)
+{
+    emu->eip += 1;
+    ModRM modrm;
+    parse_modrm(emu, &modrm);
+    uint8_t rm8 = get_rm8(emu, &modrm);
+    set_r8(emu, &modrm, rm8);
 }
 
 static void mov_r32_rm32(Emulator* emu)
@@ -291,9 +315,14 @@ void init_instructions(void) {
     instructions[0x7F] = jg;
 
     instructions[0x83] = code_83;
+    instructions[0x88] = mov_rm8_r8;
     instructions[0x89] = mov_rm32_r32;
+    instructions[0x8A] = mov_r8_rm8;
     instructions[0x8B] = mov_r32_rm32;
 
+    for (i = 0; i < 8; i++) {
+        instructions[ 0xB0 + i ] = mov_r8_imm8;
+    }
     for (i = 0; i < 8; i++) {
         instructions[ 0xB8 + i ] = mov_r32_imm32;
     }
