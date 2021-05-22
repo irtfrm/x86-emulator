@@ -21,9 +21,15 @@ typedef struct {
 
 void parse_modrm(Emulator* emu, ModRM* modrm);
 uint32_t calc_memory_address(Emulator* emu, ModRM* modrm);
+
 void set_rm32(Emulator* emu, ModRM* modrm, uint32_t value);
 uint32_t get_rm32(Emulator* emu, ModRM* modrm);
 void set_r32(Emulator* emu, ModRM* modrm, uint32_t r32);
 uint32_t get_r32(Emulator*emu, ModRM* modrm);
+
+void set_rm8(Emulator* emu, ModRM* modrm, uint8_t value);
+uint8_t get_rm8(Emulator* emu, ModRM* modrm);
+void set_r8(Emulator* emu, ModRM* modrm, uint8_t r8);
+uint8_t get_r8(Emulator*emu, ModRM* modrm);
 
 #endif
