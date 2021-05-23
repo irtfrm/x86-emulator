@@ -1,5 +1,5 @@
-TARGET = if-test.bin
-OBJS = crt0.o if-test.o
+TARGET = pointer.bin
+OBJS = crt0.o pointer.o
 
 CC = gcc
 LD = ld
