@@ -69,6 +69,15 @@ static void mov_r32_rm32(Emulator* emu)
     set_r32(emu, &modrm, rm32);
 }
 
+static void lea_r32_m(Emulator* emu)
+{
+    emu->eip += 1;
+    ModRM modrm;
+    parse_modrm(emu, &modrm);
+    uint32_t address = calc_memory_address(emu, &modrm);
+    set_r32(emu, &modrm, address);
+}
+
 static void add_rm32_r32(Emulator* emu)
 {
     emu->eip += 1;
@@ -361,6 +370,7 @@ void init_instructions(void) {
     instructions[0x89] = mov_rm32_r32;
     instructions[0x8A] = mov_r8_rm8;
     instructions[0x8B] = mov_r32_rm32;
+    instructions[0x8D] = lea_r32_m;
 
     for (i = 0; i < 8; i++) {
         instructions[ 0xB0 + i ] = mov_r8_imm8;
